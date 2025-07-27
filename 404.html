@@ -4,18 +4,29 @@
     <meta charset="utf-8">
     <title>Chronicare</title>
     <script type="text/javascript">
-      // SPA redirect handler with base path support
+      // GitHub Pages SPA Redirect Handler for Base Path
+      // This script redirects direct route access to query string format
       (function(l) {
         var basePath = '/chronicareCLient/';
-        if (l.search[1] === '/') {
-          var decoded = l.search.slice(1).split('&').map(function(s) {
-            return s.replace(/~and~/g, '&');
-          }).join('?');
-          if (decoded.startsWith(basePath)) {
-            decoded = decoded.substring(basePath.length);
+        
+        // Check if we're on a direct route access (not already redirected)
+        if (l.search[1] !== '/') {
+          // Extract the path after the base path
+          var pathAfterBase = l.pathname.substring(basePath.length);
+          
+          // If there's a path after the base, redirect to query string format
+          if (pathAfterBase && pathAfterBase !== '') {
+            // Encode special characters for query string
+            var encodedPath = pathAfterBase.replace(/&/g, '~and~');
+            
+            // Redirect to index.html with query string
+            l.replace(
+              l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+              basePath + '?/' + encodedPath +
+              (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+              l.hash
+            );
           }
-          var newPath = basePath + decoded;
-          window.history.replaceState(null, null, newPath + l.hash);
         }
       }(window.location));
     </script>
